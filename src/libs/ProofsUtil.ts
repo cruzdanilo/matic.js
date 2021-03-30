@@ -1,6 +1,5 @@
 import axios from 'axios'
 const BN = require('bn.js')
-const bluebird = require('bluebird')
 const Trie = require('merkle-patricia-tree')
 const EthereumTx = require('ethereumjs-tx')
 const ethUtils = require('ethereumjs-util')
@@ -147,14 +146,14 @@ export default class ProofsUtil {
 
   static async buildBlockHeaderMerkle(eth, start, end) {
     const headers = new Array(end - start + 1)
-    await bluebird.map(
-      headers,
-      // eslint-disable-next-line
-      async (_, i) => {
-        logger.debug('fetching block', i + start)
-        headers[i] = ProofsUtil.getBlockHeader(await eth.getBlock(i + start))
-      },
-      { concurrency: 20 }
+    await Promise.all(
+      headers.map(
+        // eslint-disable-next-line space-before-function-paren
+        async (_, i) => {
+          logger.debug('fetching block', i + start)
+          headers[i] = ProofsUtil.getBlockHeader(await eth.getBlock(i + start))
+        }
+      )
     )
     return new MerkleTree(headers)
   }
