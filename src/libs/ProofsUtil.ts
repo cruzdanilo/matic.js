@@ -1,6 +1,6 @@
 import axios from 'axios'
 const BN = require('bn.js')
-const Trie = require('merkle-patricia-tree')
+const { SecureTrie: Trie } = require('merkle-patricia-tree')
 const EthereumTx = require('ethereumjs-tx')
 const ethUtils = require('ethereumjs-util')
 const MerkleTree = require('./MerkleTree')
@@ -308,7 +308,7 @@ export default class ProofsUtil {
   static getStateSyncTxHash(block): Buffer {
     return ethUtils.keccak256(
       Buffer.concat([
-        ethUtils.toBuffer('matic-bor-receipt-'), // prefix for bor receipt
+        ethUtils.toBuffer(Buffer.from('matic-bor-receipt-')), // prefix for bor receipt
         ethUtils.setLengthLeft(ethUtils.toBuffer(block.number), 8), // 8 bytes of block number (BigEndian)
         ethUtils.toBuffer(block.hash), // block hash
       ])
